@@ -1,0 +1,6 @@
+D:\project\docker\UserApi\Resilience\bin\Debug\netcoreapp2.2\Resilience.deps.json
+D:\project\docker\UserApi\Resilience\bin\Debug\netcoreapp2.2\Resilience.dll
+D:\project\docker\UserApi\Resilience\obj\Debug\netcoreapp2.2\Resilience.csproj.CoreCompileInputs.cache
+D:\project\docker\UserApi\Resilience\obj\Debug\netcoreapp2.2\Resilience.AssemblyInfoInputs.cache
+D:\project\docker\UserApi\Resilience\obj\Debug\netcoreapp2.2\Resilience.AssemblyInfo.cs
+D:\project\docker\UserApi\Resilience\obj\Debug\netcoreapp2.2\Resilience.csprojAssemblyReference.cache
