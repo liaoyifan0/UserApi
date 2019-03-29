@@ -20,7 +20,7 @@ namespace Resilience
         private readonly HttpClient _httpclient;
         private readonly Func<string, IEnumerable<IAsyncPolicy>> _policyCreator;
         private readonly ConcurrentDictionary<string, AsyncPolicyWrap> _policyWrappers;
-        private readonly ILogger<ResilienceHttpClient> _logger;
+        private readonly ILogger<ResilienceHttpClient> _logger;  
         private readonly HttpContextAccessor _httpContextAccessor;
 
         public ResilienceHttpClient(
