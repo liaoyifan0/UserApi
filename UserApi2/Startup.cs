@@ -41,6 +41,8 @@ namespace UserApi2
                 options.Filters.Add(typeof(GlobalExceptionFilter)); 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+
             services.AddSingleton<IConsulClient>(p => new ConsulClient(cfg =>
             {
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
@@ -50,8 +52,6 @@ namespace UserApi2
                     cfg.Address = new Uri(serviceConfiguration.Consul.HttpEndpoint);
                 }
             }));
-
-            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
 
         }
 
@@ -67,9 +67,11 @@ namespace UserApi2
                 app.UseDeveloperExceptionPage();
             }
 
+            //启动时在Consul完成注册
             applicationLifetime.ApplicationStarted.Register(() => {
                 RegisterService(app, serviceOptions, consul);
             });
+            //关闭时在Consul注销
             applicationLifetime.ApplicationStopped.Register(() => {
                 DeregisterService(app, serviceOptions, consul);
             });
@@ -82,6 +84,7 @@ namespace UserApi2
             IOptions<ServiceDiscoveryOptions> serviceOptions,
             IConsulClient consul)
         {   
+            //获取自己的ID地址
             var features = app.Properties["server.Features"] as FeatureCollection;
             var addresses = features.Get<IServerAddressesFeature>()
                 .Addresses

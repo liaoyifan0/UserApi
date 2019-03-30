@@ -2,13 +2,16 @@ D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\User.Identity.de
 D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\User.Identity.runtimeconfig.json
 D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\User.Identity.runtimeconfig.dev.json
 D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\User.Identity.dll
+D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\Resilience.dll
+D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\Resilience.pdb
+D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.csprojAssemblyReference.cache
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.csproj.CoreCompileInputs.cache
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.RazorAssemblyInfo.cache
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.RazorAssemblyInfo.cs
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.AssemblyInfoInputs.cache
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.AssemblyInfo.cs
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.RazorTargetAssemblyInfo.cache
-D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.csprojAssemblyReference.cache
+D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.csproj.CopyComplete
 D:\project\docker\UserApi\User.Identity\bin\Debug\netcoreapp2.2\User.Identity.pdb
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.dll
 D:\project\docker\UserApi\User.Identity\obj\Debug\netcoreapp2.2\User.Identity.pdb

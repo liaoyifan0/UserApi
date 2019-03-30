@@ -21,26 +21,45 @@ namespace Resilience
         private readonly Func<string, IEnumerable<IAsyncPolicy>> _policyCreator;
         private readonly ConcurrentDictionary<string, AsyncPolicyWrap> _policyWrappers;
         private readonly ILogger<ResilienceHttpClient> _logger;  
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ResilienceHttpClient(
-            Func<string, IEnumerable<Policy>> policyCreator, 
+            Func<string, IEnumerable<IAsyncPolicy>> policyCreator, 
             ILogger<ResilienceHttpClient> logger,
-            HttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor
         )
         {
             _httpclient = new HttpClient();
+            _policyCreator = policyCreator;
             _policyWrappers = new ConcurrentDictionary<string, AsyncPolicyWrap>();
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<HttpResponseMessage> PostAsync<T>(string url, T item, string authorizationToken, string requestId = null, string authorizationMethod = "Bearer")
+        public async Task<HttpResponseMessage> PostAsync<T>(string url, T item, string authorizationToken = null, string requestId = null, string authorizationMethod = "Bearer")
         {
-            return await DoPostAsync(HttpMethod.Post, url, item, authorizationToken, requestId, authorizationMethod);
+            Func<HttpContent> func = () => { return GetHttpContent(item); };
+            return await DoPostAsync(HttpMethod.Post, url, func, authorizationToken, requestId, authorizationMethod);
         }
 
-        private Task<HttpResponseMessage> DoPostAsync<T>(HttpMethod method, string uri, T item, string authorizationToken, string requestId, string authorizationMethod)
+        public async Task<HttpResponseMessage> PostAsync(string url, Dictionary<string ,string> keyValues, string authorizationToken = null, string requestId = null, string authorizationMethod = "Bearer")
+        {
+            Func<HttpContent> func = () => { return GetHttpContent(keyValues); };
+            return await DoPostAsync(HttpMethod.Post, url, func, authorizationToken, requestId, authorizationMethod);
+        }
+
+        private HttpContent GetHttpContent<T>(T item)
+        {
+            return new StringContent(JsonConvert.SerializeObject(item), System.Text.Encoding.UTF8, "application/json");
+        }
+
+        private HttpContent GetHttpContent(Dictionary<string, string> keyValues)
+        {
+            return new FormUrlEncodedContent(keyValues);
+        }
+
+
+        private Task<HttpResponseMessage> DoPostAsync(HttpMethod method, string uri, Func<HttpContent> func, string authorizationToken, string requestId, string authorizationMethod)
         {
             if(method != HttpMethod.Post && method != HttpMethod.Put)
             {
@@ -49,10 +68,10 @@ namespace Resilience
             var origin = GetOriginFromUri(uri);
             return HttpInvoker(origin, async context =>
             {
-                var requestMessage = new HttpRequestMessage(method, origin);
+                var requestMessage = new HttpRequestMessage(method, uri);
                 SetAuthorizationHeader(requestMessage);
 
-                requestMessage.Content = new StringContent(JsonConvert.SerializeObject(item), System.Text.Encoding.UTF8, "application/json");
+                requestMessage.Content = func();
                 if (authorizationToken != null)
                 {
                     requestMessage.Headers.Authorization = new AuthenticationHeaderValue(authorizationMethod, authorizationToken);
@@ -63,7 +82,7 @@ namespace Resilience
                 }
                 var response = await _httpclient.SendAsync(requestMessage);
 
-                if(response.StatusCode != HttpStatusCode.InternalServerError)
+                if(response.StatusCode == HttpStatusCode.InternalServerError)
                 {
                     throw new HttpRequestException();
                 }
