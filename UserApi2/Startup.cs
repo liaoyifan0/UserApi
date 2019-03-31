@@ -64,11 +64,6 @@ namespace UserApi2
             IOptions<ServiceDiscoveryOptions> serviceOptions,
             IConsulClient consul)     
         {
-            var contenRoot = Directory.GetCurrentDirectory();
-
-            var features = app.Properties["server.Features"] as FeatureCollection;
-            var addresses = features.Get<IServerAddressesFeature>().Addresses;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
