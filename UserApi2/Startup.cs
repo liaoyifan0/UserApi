@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Consul;
 using Microsoft.AspNetCore.Builder;
@@ -62,6 +64,11 @@ namespace UserApi2
             IOptions<ServiceDiscoveryOptions> serviceOptions,
             IConsulClient consul)     
         {
+            var contenRoot = Directory.GetCurrentDirectory();
+
+            var features = app.Properties["server.Features"] as FeatureCollection;
+            var addresses = features.Get<IServerAddressesFeature>().Addresses;
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
