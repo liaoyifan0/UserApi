@@ -6,6 +6,8 @@ using UserApi2.Data;
 using Microsoft.AspNetCore.JsonPatch;
 using UserApi2.Models;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace UserApi2.Controllers
 {
@@ -70,6 +72,36 @@ namespace UserApi2.Controllers
             return Ok(user.Id);
         }
 
+        [HttpGet]
+        [Route("tags")]
+        public async Task<IActionResult> GetUserTags()
+        {
+            return Ok(await _context.UserTags.Where(u => u.UserId == userIdentity.UserId).ToListAsync());
+        }
 
+        [HttpPost]
+        [Route("search")]
+        public async Task<IActionResult> Search(string phone)
+        {
+            return Ok(await _context.Users.FirstOrDefaultAsync(u => u.Id == userIdentity.UserId));
+        }
+
+        [HttpPut]
+        [Route("tags")]
+        public async Task<IActionResult> UpdateUserTags([FromBody]List<string> tags)
+        {
+            var originTags =  await _context.UserTags.Where(u => u.UserId == userIdentity.UserId).ToListAsync();
+            var newTags = tags.Except(originTags.Select(i => i.Tag));
+
+            await _context.UserTags.AddRangeAsync(newTags.Select(i => new UserTag
+            {
+                UserId = userIdentity.UserId,
+                CreatedTime = DateTime.Now,
+                Tag = i
+            }));
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
