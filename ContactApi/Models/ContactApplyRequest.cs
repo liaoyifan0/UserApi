@@ -22,7 +22,7 @@ namespace ContactApi.Models
         /// <summary>
         /// 是否通过，0未通过，1已通过
         /// </summary>
-        public string Approvaled { get; set; }
+        public int Approvaled { get; set; }
 
         public DateTime CreationTime { get; set; }
 

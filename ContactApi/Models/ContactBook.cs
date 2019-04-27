@@ -11,6 +11,6 @@ namespace ContactApi.Models
         public int UserId { get; set; }
 
 
-        public IList<Contact> Contacts { get; set; }
+        public IList<Contact> Contacts { get; set; } = new List<Contact>();
     }
 }
