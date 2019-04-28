@@ -44,6 +44,34 @@ namespace ContactApi.Data
             return CheckUpdateResultHelper.CheckUpdateOneSuccessfully(updateResult);
         }
 
+        public async Task<List<Contact>> GetContactAsync(int userId, CancellationToken cancellationToken)
+        {
+            var contactBooks = await _contactContext.ContactBooks.FindAsync(i => i.UserId == userId, null, cancellationToken);
+            if (contactBooks == null)
+            {
+                // Log TBD
+
+                return null;
+            }
+
+            var contactBook = await contactBooks.FirstOrDefaultAsync(cancellationToken);
+            return contactBook.Contacts.ToList();
+        }
+
+        public async Task<bool> TagContactAsync(int contactId, int userId, List<string> tags, CancellationToken cancellationToken)
+        {
+            var filter = Builders<ContactBook>.Filter.And(
+                    Builders<ContactBook>.Filter.Eq(c => c.UserId, userId),
+                    Builders<ContactBook>.Filter.Eq("Contacts.UserId", contactId)
+                );
+
+            var update = Builders<ContactBook>.Update
+                    .Set("Contacts.$.Tags", tags);
+            var updateResult = await _contactContext.ContactBooks.UpdateOneAsync(filter, update, null, cancellationToken);
+
+            return CheckUpdateResultHelper.CheckUpdateOneSuccessfully(updateResult);
+        }
+
         public async Task<bool> UpdateContactInfoAsync(BaseUserInfo userInfo, CancellationToken cancellationToken)
         {
             var contactBooks = await _contactContext.ContactBooks.FindAsync(i => i.UserId == userInfo.UserId, null, cancellationToken); //只能过滤出当前查询用户的ContactBook
@@ -58,10 +86,10 @@ namespace ContactApi.Data
                     );
 
             var update = Builders<ContactBook>.Update
-                    .Set("Contacts.$Name", userInfo.Name)
-                    .Set("Contacts.$Avatar", userInfo.Avatar)
-                    .Set("Contacts.$Company", userInfo.Company)
-                    .Set("Contacts.$Title", userInfo.Title);
+                    .Set("Contacts.$.Name", userInfo.Name)
+                    .Set("Contacts.$.Avatar", userInfo.Avatar)
+                    .Set("Contacts.$.Company", userInfo.Company)
+                    .Set("Contacts.$.Title", userInfo.Title);
 
             var updateResult = _contactContext.ContactBooks.UpdateMany(filter, update);
 

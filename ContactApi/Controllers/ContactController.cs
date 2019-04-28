@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ContactApi.Data;
 using ContactApi.Models;
 using ContactApi.Service;
+using ContactApi.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -33,6 +34,26 @@ namespace ContactApi.Controllers
             _settings = settings;
         }
 
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        {
+            return Ok(await _contactRepository.GetContactAsync(userIdentity.UserId, cancellationToken));
+        }
+
+        [HttpPut]
+        [Route("tag")]
+        public async Task<IActionResult> TagContact([FromBody]TagContactInputModel input, CancellationToken cancellationToken)
+        {
+            var result = await _contactRepository.TagContactAsync(userIdentity.UserId, input.ContactId, input.Tags, cancellationToken);
+            if (result)
+            {
+                return Ok();
+            }
+
+            // Log TBD
+            return BadRequest();
+        }
 
         [HttpGet]
         [Route("apply-requests")]
