@@ -56,7 +56,7 @@ namespace UserApi2.Controllers
 
         [Route("check-or-create")]
         [HttpPost]
-        public async Task<IActionResult> CheckOrCreate(string phone)
+        public async Task<IActionResult> CheckOrCreate([FromForm]string phone)
         {
             // todo: 验证phone格式
 
@@ -67,6 +67,7 @@ namespace UserApi2.Controllers
                 await _context.Users.AddAsync(user);
 
                 await _context.SaveChangesAsync();
+                user = await _context.Users.SingleOrDefaultAsync(u => u.Phone == phone);
             }
 
             return Ok(user.Id);

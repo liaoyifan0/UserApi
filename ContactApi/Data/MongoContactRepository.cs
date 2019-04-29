@@ -46,15 +46,14 @@ namespace ContactApi.Data
 
         public async Task<List<Contact>> GetContactAsync(int userId, CancellationToken cancellationToken)
         {
-            var contactBooks = await _contactContext.ContactBooks.FindAsync(i => i.UserId == userId, null, cancellationToken);
-            if (contactBooks == null)
+            var contactBook = await (await _contactContext.ContactBooks.FindAsync(i => i.UserId == userId, null, cancellationToken)).FirstOrDefaultAsync();
+            if (contactBook == null)
             {
                 // Log TBD
 
                 return null;
             }
 
-            var contactBook = await contactBooks.FirstOrDefaultAsync(cancellationToken);
             return contactBook.Contacts.ToList();
         }
 

@@ -28,8 +28,10 @@ namespace ContactApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSingleton<IContactApplyRequestRepository, MongoContactApplyRequestRepository>();
+            services.AddScoped<IContactApplyRequestRepository, MongoContactApplyRequestRepository>();
+            services.AddScoped<IContactRepository, MongoContactRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ContactContext>();
             services.Configure<MongoSettings>(Configuration.GetSection("Mongo"));
         }
 

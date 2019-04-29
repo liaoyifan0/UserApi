@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace ContactApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/contacts")]
     [ApiController]
     public class ContactController : BaseController
     {
