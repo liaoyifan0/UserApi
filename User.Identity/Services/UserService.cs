@@ -1,6 +1,7 @@
 ﻿using DnsClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Resilience;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace User.Identity.Services
             _userServiceUrl = $"http://{host}:{port}";
         }
 
-        public async Task<int> CheckOrCreate(string phone)
+        public async Task<UserInfo> CheckOrCreate(string phone)
         {
             _logger.LogTrace("Enter check or create");
             var form = new Dictionary<string, string> { {"phone", phone} };
@@ -47,10 +48,11 @@ namespace User.Identity.Services
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var userId = await response.Content.ReadAsStringAsync();
-                    int.TryParse(userId, out int intUserId);
+                    var result = await response.Content.ReadAsStringAsync();
+                    var userInfo = JsonConvert.DeserializeObject<UserInfo>(result);
 
-                    return intUserId;
+                    _logger.LogTrace($"Current user id is: {userInfo.Id}");
+                    return userInfo;
                 }
             }
             catch(Exception e)
@@ -59,7 +61,7 @@ namespace User.Identity.Services
                 throw e;
             }            
 
-            return 0;
+            return null;
         }
     }
 }

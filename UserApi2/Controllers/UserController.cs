@@ -70,7 +70,13 @@ namespace UserApi2.Controllers
                 user = await _context.Users.SingleOrDefaultAsync(u => u.Phone == phone);
             }
 
-            return Ok(user.Id);
+            return Ok(new {
+                user.Id,
+                user.Name,
+                user.Company,
+                user.Title,
+                user.Avatar
+            });
         }
 
         [HttpGet]

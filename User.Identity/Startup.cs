@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DnsClient;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,7 @@ namespace User.Identity
                 return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttpClient();
             });
 
+            services.AddTransient<IProfileService, ProfileService>();
             services.AddScoped<IAuthCodeService, TestAuthCodeService>()
                     .AddScoped<IUserService, UserService>();
 
