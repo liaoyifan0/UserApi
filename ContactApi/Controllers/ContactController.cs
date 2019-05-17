@@ -65,7 +65,7 @@ namespace ContactApi.Controllers
         }
 
         [HttpPost]
-        [Route("apply-requests")]
+        [Route("apply-requests/{userId}")]
         public async Task<IActionResult> AddApplyRequest(int userId, CancellationToken cancellationToken)
         {
             var userBaseInfo = await _userService.GetBaseUserInfoAsync(userId);

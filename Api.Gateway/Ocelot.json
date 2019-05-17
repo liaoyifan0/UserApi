@@ -10,12 +10,30 @@
         }
       ],
       "UpstreamPathTemplate": "/users",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Finbook",
+        "AllowedScopes": [ "user_api" ]
+      }
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/users/baseinfo/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/users/baseinfo/{userId}",
       "UpstreamHttpMethod": [ "Get" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Finbook",
-        "AllowedScopes": []
+        "AllowedScopes": [ "user_api" ]
       }
     },
+
     {
       "DownstreamPathTemplate": "/connect/{catchAll}",
       "DownstreamScheme": "http",
@@ -28,6 +46,7 @@
       "UpstreamPathTemplate": "/connect/{catchAll}",
       "UpstreamHttpMethod": [ "Post" ]
     },
+
     {
       "DownstreamPathTemplate": "/.well-known/{catchAll}",
       "DownstreamScheme": "http",
@@ -40,6 +59,7 @@
       "UpstreamPathTemplate": "/.well-known/{catchAll}",
       "UpstreamHttpMethod": [ "Get" ]
     },
+
     {
       "DownstreamPathTemplate": "/api/contacts",
       "DownstreamScheme": "http",
@@ -53,9 +73,10 @@
       "UpstreamHttpMethod": [ "Get" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Finbook",
-        "AllowedScopes": ["contact_api"]
+        "AllowedScopes": [ "contact_api" ]
       }
     },
+
     {
       "DownstreamPathTemplate": "/api/contacts/tags",
       "DownstreamScheme": "http",
@@ -66,7 +87,11 @@
         }
       ],
       "UpstreamPathTemplate": "/contacts/tag",
-      "UpstreamHttpMethod": [ "Put" ]
+      "UpstreamHttpMethod": [ "Put" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Finbook",
+        "AllowedScopes": [ "contact_api" ]
+      }
     },
     {
       "DownstreamPathTemplate": "/api/contacts/apply-requests",
@@ -78,7 +103,11 @@
         }
       ],
       "UpstreamPathTemplate": "/contacts/apply-requests",
-      "UpstreamHttpMethod": [ "Get", "Put", "Post" ]
+      "UpstreamHttpMethod": [ "Get", "Put", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Finbook",
+        "AllowedScopes": [ "contact_api" ]
+      }
     }
   ],
   "GlobalConfiguration": {

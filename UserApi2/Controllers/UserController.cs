@@ -110,5 +110,28 @@ namespace UserApi2.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet]
+        [Route("baseinfo/{userId}")]
+        public async Task<IActionResult> GetBaseInfo(int userId)
+        {
+            // TBD 检查用户关系
+            var user = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
+
+            if( user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+                user.Id,
+                user.Name,
+                user.Company,
+                user.Title,
+                user.Avatar
+            });
+        }
+
     }
 }

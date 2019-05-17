@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Consul;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -38,10 +40,7 @@ namespace UserApi2
             {
                 options.UseMySQL(Configuration.GetConnectionString("Mysql"));
             });
-
-            services.AddMvc(options => {
-                options.Filters.Add(typeof(GlobalExceptionFilter)); 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
 
             services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
 
@@ -54,6 +53,19 @@ namespace UserApi2
                     cfg.Address = new Uri(serviceConfiguration.Consul.HttpEndpoint);
                 }
             }));
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.Audience = "user_api";
+                    options.Authority = "http://localhost:5000";
+                });
+
+            services.AddMvc(options => {
+                options.Filters.Add(typeof(GlobalExceptionFilter));
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
         }
 
@@ -78,6 +90,7 @@ namespace UserApi2
                 DeregisterService(app, serviceOptions, consul);
             });
 
+            app.UseAuthentication();
             app.UseMvc();
 
         }

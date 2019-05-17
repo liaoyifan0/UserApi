@@ -21,5 +21,10 @@ namespace UserApi2.Dtos
         /// 头像地址
         /// </summary>
         public string Avatar { get; set; }
+
+        public string Company { get; set; }
+
+        public string Title { get; set; }
+
     }
 }
