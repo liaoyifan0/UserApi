@@ -31,21 +31,7 @@ namespace User.Identity
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<PollyOptions>(Configuration.GetSection("Polly"));            
-            services.AddSingleton(typeof(ResilienceClientFactory), sp =>
-            {
-                var logger = sp.GetRequiredService<ILogger<ResilienceHttpClient>>();
-                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                var pollyOptions = sp.GetRequiredService<IOptions<PollyOptions>>().Value;
-
-                return new ResilienceClientFactory(logger, httpContextAccessor, pollyOptions.RetryCount, pollyOptions.ExceptionCountBeforeBreaking);
-            });
-            //注册ResilienceHttpClient
-            services.AddSingleton<IHttpClient>(sp => {
-                return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttpClient();
-            });
-
+        {            
             services.AddTransient<IProfileService, ProfileService>();
             services.AddScoped<IAuthCodeService, TestAuthCodeService>()
                     .AddScoped<IUserService, UserService>();
@@ -65,6 +51,19 @@ namespace User.Identity
             {
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
                 return new LookupClient(serviceConfiguration.Consul.DnsEndpoint.ToIPEndPoint());
+            });
+            services.Configure<PollyOptions>(Configuration.GetSection("Polly"));
+            services.AddSingleton(typeof(ResilienceClientFactory), sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<ResilienceHttpClient>>();
+                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+                var pollyOptions = sp.GetRequiredService<IOptions<PollyOptions>>().Value;
+
+                return new ResilienceClientFactory(logger, httpContextAccessor, pollyOptions.RetryCount, pollyOptions.ExceptionCountBeforeBreaking);
+            });
+            //注册ResilienceHttpClient
+            services.AddSingleton<IHttpClient>(sp => {
+                return sp.GetRequiredService<ResilienceClientFactory>().GetResilienceHttpClient();
             });
         }
 

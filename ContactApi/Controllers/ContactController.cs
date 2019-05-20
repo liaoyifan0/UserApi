@@ -92,7 +92,7 @@ namespace ContactApi.Controllers
         }
 
         [HttpPut]
-        [Route("apply-requests")]
+        [Route("apply-requests/{applierId}")]
         public async Task<IActionResult> ApprovalApplyRequest(int applierId, CancellationToken cancellationToken)
         {
             var result = await _contactApplyRequestRepository.ApprovalAsync(UserIdentity.UserId, applierId, cancellationToken);

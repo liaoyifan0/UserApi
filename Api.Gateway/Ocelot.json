@@ -94,7 +94,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/contacts/apply-requests",
+      "DownstreamPathTemplate": "/api/contacts/apply-requests/{UserId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -102,7 +102,7 @@
           "Port": 5003
         }
       ],
-      "UpstreamPathTemplate": "/contacts/apply-requests",
+      "UpstreamPathTemplate": "/contacts/apply-requests/{UserId}",
       "UpstreamHttpMethod": [ "Get", "Put", "Post" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Finbook",

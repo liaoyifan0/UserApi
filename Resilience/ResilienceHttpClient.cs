@@ -36,16 +36,54 @@ namespace Resilience
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public Task<string> GetStringAsync(string url, string authorizationToken = null, string authorizationMethod = "Bearer")
+        {
+            var origin = GetOriginFromUri(url);
+
+            return HttpInvoker(origin, async context =>
+            {
+                var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+
+                SetAuthorizationHeader(requestMessage);
+
+                if (authorizationToken != null)
+                {
+                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue(authorizationMethod, authorizationToken);
+                }
+
+                var response = await _httpclient.SendAsync(requestMessage);
+
+                if (response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    throw new HttpRequestException();
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+
+                return await response.Content.ReadAsStringAsync();
+            });
+        }
+
+        public Task<HttpResponseMessage> PutAsync<T>(string url, T item, string authorizationToken = null, string requestId = null, string authorizationMethod = "Bearer")
+        {
+            Func<HttpContent> func = () => { return GetHttpContent(item); };
+            return DoPostPutAsync(HttpMethod.Put, url, func, authorizationToken, requestId, authorizationMethod);
+        }
+
+
         public async Task<HttpResponseMessage> PostAsync<T>(string url, T item, string authorizationToken = null, string requestId = null, string authorizationMethod = "Bearer")
         {
             Func<HttpContent> func = () => { return GetHttpContent(item); };
-            return await DoPostAsync(HttpMethod.Post, url, func, authorizationToken, requestId, authorizationMethod);
+            return await DoPostPutAsync(HttpMethod.Post, url, func, authorizationToken, requestId, authorizationMethod);
         }
 
         public async Task<HttpResponseMessage> PostAsync(string url, Dictionary<string ,string> keyValues, string authorizationToken = null, string requestId = null, string authorizationMethod = "Bearer")
         {
             Func<HttpContent> func = () => { return GetHttpContent(keyValues); };
-            return await DoPostAsync(HttpMethod.Post, url, func, authorizationToken, requestId, authorizationMethod);
+            return await DoPostPutAsync(HttpMethod.Post, url, func, authorizationToken, requestId, authorizationMethod);
         }
 
         private HttpContent GetHttpContent<T>(T item)
@@ -59,7 +97,7 @@ namespace Resilience
         }
 
 
-        private Task<HttpResponseMessage> DoPostAsync(HttpMethod method, string uri, Func<HttpContent> func, string authorizationToken, string requestId, string authorizationMethod)
+        private Task<HttpResponseMessage> DoPostPutAsync(HttpMethod method, string uri, Func<HttpContent> func, string authorizationToken, string requestId, string authorizationMethod)
         {
             if(method != HttpMethod.Post && method != HttpMethod.Put)
             {

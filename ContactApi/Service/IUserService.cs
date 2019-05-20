@@ -8,7 +8,7 @@ namespace ContactApi.Service
 {
     public interface IUserService
     {
-        Task<BaseUserInfo> GetBaseUserInfoAsync(int UserId);
+        Task<UserIdentity> GetBaseUserInfoAsync(int UserId);
 
     }
 }

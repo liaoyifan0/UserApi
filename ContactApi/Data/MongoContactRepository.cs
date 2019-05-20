@@ -18,7 +18,7 @@ namespace ContactApi.Data
             _contactContext = context;
         }
 
-        public async Task<bool> AddContactAsync(int userId, BaseUserInfo userInfo, CancellationToken cancellationToken)
+        public async Task<bool> AddContactAsync(int userId, UserIdentity userInfo, CancellationToken cancellationToken)
         {
             var filter = Builders<ContactBook>.Filter.Eq(i => i.UserId, userId);
             if(await _contactContext.ContactBooks.CountDocumentsAsync(filter) == 0)
@@ -71,7 +71,7 @@ namespace ContactApi.Data
             return CheckUpdateResultHelper.CheckUpdateOneSuccessfully(updateResult);
         }
 
-        public async Task<bool> UpdateContactInfoAsync(BaseUserInfo userInfo, CancellationToken cancellationToken)
+        public async Task<bool> UpdateContactInfoAsync(UserIdentity userInfo, CancellationToken cancellationToken)
         {
             var contactBooks = await _contactContext.ContactBooks.FindAsync(i => i.UserId == userInfo.UserId, null, cancellationToken); //只能过滤出当前查询用户的ContactBook
             var contactBook = await contactBooks.FirstOrDefaultAsync();

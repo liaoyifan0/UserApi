@@ -125,7 +125,7 @@ namespace UserApi2.Controllers
 
             return Ok(new
             {
-                user.Id,
+                UserId = user.Id,
                 user.Name,
                 user.Company,
                 user.Title,

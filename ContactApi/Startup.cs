@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Resilience;
@@ -48,11 +49,17 @@ namespace ContactApi
                     options.RequireHttpsMetadata = false;
                     options.Audience = "contact_api";
                     options.Authority = "http://localhost:5000";
+                    options.SaveToken = true;
                 });
 
             services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
             services.Configure<PollyOptions>(Configuration.GetSection("Polly"));
-
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IDnsQuery>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
+                return new LookupClient(options.Consul.DnsEndpoint.ToIPEndPoint());
+            });
             services.AddSingleton(typeof(ResilienceClientFactory), sp =>
             {
                 var logger = sp.GetRequiredService<ILogger<ResilienceHttpClient>>();
@@ -64,12 +71,7 @@ namespace ContactApi
             {
                 var factory = sp.GetRequiredService<ResilienceClientFactory>();
                 return factory.GetResilienceHttpClient();
-            });
-            services.AddSingleton<IDnsQuery>(sp =>
-            {
-                var options = sp.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
-                return new LookupClient(options.Consul.DnsEndpoint.ToIPEndPoint());
-            });
+            });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
